@@ -32,3 +32,9 @@ variable "common_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "db_password" {
+  description = "Password for the PostgreSQL database"
+  type        = string
+  sensitive   = true
+}
