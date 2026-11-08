@@ -8,6 +8,7 @@ The base layer of my AWS account (`us-east-1`): the things every project shares 
 |---|---|
 | `env/prod/` | Root module for the `prod` environment: backend, versions, module call |
 | `infra/` | The resources, as one module |
+| `bootstrap/github-oidc/` | GitHub OIDC provider, the pipeline roles and the app permissions boundary. Separate state, **applied from your machine only**. See its [README](bootstrap/github-oidc/README.md) |
 
 ## What app repos can use
 
@@ -22,6 +23,8 @@ The shared network is published to SSM Parameter Store, so app repos read it wit
 | `/main-terraform/prod/network/private_subnet_ids` | StringList |
 | `/main-terraform/prod/ecr/<app>/repository_url` | String |
 | `/main-terraform/prod/ecr/<app>/repository_arn` | String |
+| `/main-terraform/prod/iam/app_role_boundary_arn` | String (set it as `permissions_boundary` on every `aws_iam_role`) |
+| `/main-terraform/prod/iam/github_plan_role_arn`, `github_deploy_role_arn` | String |
 
 Each app listed in `app_repositories` (today: `source-app`) gets its own ECR repository with immutable tags, scan on push, and a lifecycle policy that keeps the last 20 images.
 

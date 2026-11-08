@@ -1,0 +1,6 @@
+# Changes here decide what the pipelines may do in AWS. You're requested as reviewer
+# automatically. Enforcement would need "require code owner review" in the ruleset,
+# which a solo maintainer can't satisfy on their own PRs.
+/bootstrap/ @jacobinagabriel
+/.github/ @jacobinagabriel
+/.checkov/ @jacobinagabriel
