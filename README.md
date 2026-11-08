@@ -18,10 +18,10 @@ Changes land through pull requests. CI (`terraform`) checks formatting, validate
 To apply from your machine (Terraform ≥ 1.10):
 
 ```bash
-export AWS_PROFILE=<your SSO profile>
+export AWS_PROFILE=<your SSO profile>   # the provider and backend no longer hardcode one
 aws sso login
 cd env/prod
-terraform init
+terraform init -reconfigure            # needed once after the backend change (use_lockfile)
 terraform plan -out tfplan
 terraform apply tfplan
 ```
