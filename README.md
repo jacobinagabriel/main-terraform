@@ -36,7 +36,9 @@ State lives in S3: bucket `gabriel-jacobina-terraform-state`, key `prod/terrafor
 
 Changes land through pull requests. CI (`terraform`) checks formatting, validates, lints (tflint) and scans (checkov) every PR. Checkov includes a custom check in `.checkov/checks/`: every `aws_iam_role` must set a `permissions_boundary`. To skip a check, add `#checkov:skip=<ID>:<reason>` inside the resource; the reason is required reading in review.
 
-To apply from your machine (Terraform ≥ 1.10):
+With OIDC set up ([docs/github-oidc.md](docs/github-oidc.md)), PRs get a `plan` comment, and **Actions → Apply** applies `main` after you approve the `prod` deployment.
+
+To apply from your machine instead (Terraform ≥ 1.10):
 
 ```bash
 export AWS_PROFILE=<your SSO profile>   # the provider and backend no longer hardcode one
