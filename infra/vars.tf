@@ -32,3 +32,27 @@ variable "common_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "vpc_cidr" {
+  description = "CIDR of the shared VPC"
+  type        = string
+  default     = "10.20.0.0/16"
+}
+
+variable "azs" {
+  description = "Availability zones, pinned so the subnet layout never shifts when AWS adds a zone"
+  type        = list(string)
+  default     = ["us-east-1a", "us-east-1b"]
+}
+
+variable "enable_nat_gateway" {
+  description = "Create a single NAT gateway for private subnets (~$33/month plus data)"
+  type        = bool
+  default     = false
+}
+
+variable "interface_endpoints" {
+  description = "Interface endpoint services to create, e.g. [\"ecr.api\", \"ecr.dkr\", \"logs\"] (~$7.30/month each per AZ)"
+  type        = list(string)
+  default     = []
+}
