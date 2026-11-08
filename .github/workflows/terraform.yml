@@ -30,3 +30,5 @@ jobs:
         run: |
           tflint --init
           tflint --recursive --format compact
+      - name: Checkov
+        run: pipx run --spec checkov==3.4.3 checkov --config-file .checkov.yaml

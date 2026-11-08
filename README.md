@@ -27,7 +27,7 @@ State lives in S3: bucket `gabriel-jacobina-terraform-state`, key `prod/terrafor
 
 ## Applying
 
-Changes land through pull requests. CI (`terraform`) checks formatting, validates and lints every PR.
+Changes land through pull requests. CI (`terraform`) checks formatting, validates, lints (tflint) and scans (checkov) every PR. Checkov includes a custom check in `.checkov/checks/`: every `aws_iam_role` must set a `permissions_boundary`. To skip a check, add `#checkov:skip=<ID>:<reason>` inside the resource; the reason is required reading in review.
 
 To apply from your machine (Terraform ≥ 1.10):
 
