@@ -56,3 +56,15 @@ variable "interface_endpoints" {
   type        = list(string)
   default     = []
 }
+
+variable "app_repositories" {
+  description = "App repos that get their own ECR repository (named after the app)"
+  type        = list(string)
+  default     = ["source-app"]
+}
+
+variable "app_image_retention" {
+  description = "How many images each app ECR repository keeps"
+  type        = number
+  default     = 20
+}

@@ -17,3 +17,8 @@ output "ssm_prefix" {
   description = "Prefix of the SSM parameters app repos read"
   value       = module.prod.ssm_prefix
 }
+
+output "app_repository_urls" {
+  description = "ECR repository URL per app"
+  value       = module.prod.app_repository_urls
+}
