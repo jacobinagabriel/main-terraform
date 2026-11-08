@@ -1,0 +1,43 @@
+name: Apply
+
+# Applies env/prod from main. The job runs in the "prod" GitHub Environment, so it
+# waits for your approval, and only that environment can assume the deploy role.
+# The base layer has no destroy workflow on purpose.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: terraform-env-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v6
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.17.1
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+          role-duration-seconds: 7200
+      - name: Init
+        working-directory: env/prod
+        run: terraform init -input=false
+      - name: Plan
+        working-directory: env/prod
+        run: |
+          terraform plan -input=false -no-color -lock-timeout=120s -out tfplan | tee plan.log
+          { echo '### Plan'; echo '```'; tail -c 60000 plan.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply
+        working-directory: env/prod
+        run: terraform apply -input=false -lock-timeout=120s tfplan
