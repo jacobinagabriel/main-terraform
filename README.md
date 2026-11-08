@@ -20,6 +20,10 @@ The shared network is published to SSM Parameter Store, so app repos read it wit
 | `/main-terraform/prod/network/azs` | StringList |
 | `/main-terraform/prod/network/public_subnet_ids` | StringList |
 | `/main-terraform/prod/network/private_subnet_ids` | StringList |
+| `/main-terraform/prod/ecr/<app>/repository_url` | String |
+| `/main-terraform/prod/ecr/<app>/repository_arn` | String |
+
+Each app listed in `app_repositories` (today: `source-app`) gets its own ECR repository with immutable tags, scan on push, and a lifecycle policy that keeps the last 20 images.
 
 The VPC costs nothing while idle. App tasks run in public subnets with a public IP and no inbound rules; databases go in private subnets. A NAT gateway (`enable_nat_gateway`) and interface endpoints (`interface_endpoints`) are opt-in because they cost money every hour.
 
