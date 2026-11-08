@@ -40,26 +40,26 @@ resource "aws_security_group" "postgres" {
 }
 
 resource "aws_db_instance" "postgres" {
-  identifier             = "${var.account_name}-${var.env}-postgres-db"
-  engine                 = "postgres"
-  engine_version         = "16.3"
-  instance_class         = "db.t3.micro"
-  allocated_storage      = 20
-  storage_type           = "gp2"
-  
+  identifier        = "${var.account_name}-${var.env}-postgres-db"
+  engine            = "postgres"
+  engine_version    = "16.3"
+  instance_class    = "db.t3.micro"
+  allocated_storage = 20
+  storage_type      = "gp2"
+
   db_name  = "maindb"
   username = "dbadmin"
   password = var.db_password
-  
+
   db_subnet_group_name   = aws_db_subnet_group.postgres.name
   vpc_security_group_ids = [aws_security_group.postgres.id]
-  
-  publicly_accessible    = true
-  skip_final_snapshot    = true
-  
+
+  publicly_accessible = true
+  skip_final_snapshot = true
+
   backup_retention_period = 0
-  multi_az               = false
-  
+  multi_az                = false
+
   tags = merge(
     local.common_tags,
     {
