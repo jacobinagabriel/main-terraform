@@ -1,0 +1,30 @@
+# Only if you created any of these in the console before applying this stack:
+# copy this file to imports.tf, keep the blocks for what exists, replace
+# <ACCOUNT_ID>, then `terraform plan` shows "import" instead of "create".
+# Delete imports.tf after the apply.
+
+import {
+  to = aws_iam_openid_connect_provider.github
+  id = "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
+}
+
+import {
+  to = aws_iam_role.plan
+  id = "github-actions-terraform-plan"
+}
+
+import {
+  to = aws_iam_role.deploy
+  id = "github-actions-terraform-deploy"
+}
+
+# Managed policy attachments: "<role name>/<policy arn>".
+import {
+  to = aws_iam_role_policy_attachment.plan_read_only
+  id = "github-actions-terraform-plan/arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+import {
+  to = aws_iam_role_policy_attachment.deploy_power_user
+  id = "github-actions-terraform-deploy/arn:aws:iam::aws:policy/PowerUserAccess"
+}
