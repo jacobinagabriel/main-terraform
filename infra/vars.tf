@@ -16,9 +16,9 @@ variable "account_name" {
 }
 
 variable "aws_profile" {
-  description = "AWS CLI profile"
+  description = "AWS CLI profile. Leave null to use AWS_PROFILE or the GitHub OIDC role."
   type        = string
-  default     = "user1"
+  default     = null
 }
 
 variable "project_name" {
@@ -31,10 +31,4 @@ variable "common_tags" {
   description = "Common tags for all resources"
   type        = map(string)
   default     = {}
-}
-
-variable "db_password" {
-  description = "Password for the PostgreSQL database"
-  type        = string
-  sensitive   = true
 }
