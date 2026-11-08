@@ -13,6 +13,7 @@ locals {
 }
 
 resource "aws_ssm_parameter" "network" {
+  #checkov:skip=CKV2_AWS_34:Network ids are not secrets; app repos read them as plain String/StringList.
   for_each = local.network_parameters
 
   name  = "${local.ssm_prefix}/network/${each.key}"
