@@ -10,10 +10,19 @@ variable "github_owner" {
   default     = "jacobinagabriel"
 }
 
+variable "github_owner_id" {
+  description = "Numeric ID of the GitHub owner (gh api users/<owner> --jq .id). It's never reassigned, unlike the name"
+  type        = number
+  default     = 146280129
+}
+
 variable "repositories" {
-  description = "Repositories whose workflows may assume the roles"
-  type        = list(string)
-  default     = ["main-terraform", "source-app"]
+  description = "Repositories whose workflows may assume the roles: name => numeric ID (gh api repos/<owner>/<repo> --jq .id)"
+  type        = map(number)
+  default = {
+    "main-terraform" = 1110283550
+    "source-app"     = 1450656531
+  }
 }
 
 variable "deploy_environment" {
