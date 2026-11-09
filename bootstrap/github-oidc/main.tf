@@ -3,8 +3,11 @@ locals {
 
   oidc_host = "token.actions.githubusercontent.com"
 
-  plan_subjects   = [for repo in var.repositories : "repo:${var.github_owner}/${repo}:pull_request"]
-  deploy_subjects = [for repo in var.repositories : "repo:${var.github_owner}/${repo}:environment:${var.deploy_environment}"]
+  # GitHub's immutable subject format: repo:OWNER@OWNER-ID/REPO@REPO-ID:<context>. The IDs
+  # are never reused, so a deleted or renamed repo's name can't be claimed to get these roles.
+  repo_subjects   = [for name, id in var.repositories : "repo:${var.github_owner}@${var.github_owner_id}/${name}@${id}"]
+  plan_subjects   = [for repo in local.repo_subjects : "${repo}:pull_request"]
+  deploy_subjects = [for repo in local.repo_subjects : "${repo}:environment:${var.deploy_environment}"]
 
   app_role_arns   = [for prefix in var.app_role_prefixes : "arn:aws:iam::${local.account_id}:role/${prefix}*"]
   app_policy_arns = [for prefix in var.app_role_prefixes : "arn:aws:iam::${local.account_id}:policy/${prefix}*"]
@@ -149,7 +152,7 @@ data "aws_iam_policy_document" "plan_state" {
 resource "aws_iam_role" "plan" {
   #checkov:skip=CKV2_CUSTOM_1:Pipeline role, not an app role; it is the one defining the boundary and only this local stack manages it.
   name                 = "github-actions-terraform-plan"
-  description          = "Terraform plan from pull requests in ${join(", ", var.repositories)}"
+  description          = "Terraform plan from pull requests in ${join(", ", keys(var.repositories))}"
   assume_role_policy   = data.aws_iam_policy_document.trust["plan"].json
   max_session_duration = 3600
 }
@@ -314,7 +317,7 @@ data "aws_iam_policy_document" "deploy_iam" {
 resource "aws_iam_role" "deploy" {
   #checkov:skip=CKV2_CUSTOM_1:Pipeline role, not an app role; its own policies cap it and only this local stack manages it.
   name                 = "github-actions-terraform-deploy"
-  description          = "Terraform apply/destroy from the ${var.deploy_environment} environment in ${join(", ", var.repositories)}"
+  description          = "Terraform apply/destroy from the ${var.deploy_environment} environment in ${join(", ", keys(var.repositories))}"
   assume_role_policy   = data.aws_iam_policy_document.trust["deploy"].json
   max_session_duration = 7200 # creating an RDS instance can take a while
 }

@@ -30,6 +30,15 @@ Once `AWS_PLAN_ROLE_ARN` is set, every pull request gets a `plan` job that comme
 
 ## How the roles are limited
 
+The identity provider accepts any GitHub Actions token; the roles' trust policies are what restrict access. They match the token's `sub` claim exactly, in GitHub's immutable format, which includes the numeric owner and repository IDs:
+
+```
+repo:jacobinagabriel@146280129/<repo>@<repo-id>:pull_request          # plan role
+repo:jacobinagabriel@146280129/<repo>@<repo-id>:environment:prod      # deploy role
+```
+
+IDs are never reused, so if a repository is deleted or renamed, someone who later takes its name doesn't get these roles. Both repositories already use this format (`gh api repos/jacobinagabriel/<repo>/actions/oidc/customization/sub` shows `use_immutable_subject: true`). To add a repository, add its name and ID to `repositories` in `bootstrap/github-oidc/variables.tf` and re-apply the bootstrap stack.
+
 | Role | Who can assume it | Can do |
 |---|---|---|
 | `github-actions-terraform-plan` | `pull_request` events of the two repos | read everything (`ReadOnlyAccess`), read state, write lock files |
@@ -51,7 +60,7 @@ Only if you'd rather click than apply step 1. The policies are long, so the role
    - Provider URL: `https://token.actions.githubusercontent.com`
    - Audience: `sts.amazonaws.com`
 2. **IAM → Roles → Create role → Web identity**, provider `token.actions.githubusercontent.com`, audience `sts.amazonaws.com`, GitHub organization `jacobinagabriel`. Then edit the trust policy so `token.actions.githubusercontent.com:sub` is exactly:
-   - plan role `github-actions-terraform-plan`: `repo:jacobinagabriel/main-terraform:pull_request`, `repo:jacobinagabriel/source-app:pull_request`
-   - deploy role `github-actions-terraform-deploy`: `repo:jacobinagabriel/main-terraform:environment:prod`, `repo:jacobinagabriel/source-app:environment:prod`
+   - plan role `github-actions-terraform-plan`: `repo:jacobinagabriel@146280129/main-terraform@1110283550:pull_request`, `repo:jacobinagabriel@146280129/source-app@1450656531:pull_request`
+   - deploy role `github-actions-terraform-deploy`: `repo:jacobinagabriel@146280129/main-terraform@1110283550:environment:prod`, `repo:jacobinagabriel@146280129/source-app@1450656531:environment:prod`
 3. Attach `ReadOnlyAccess` (plan) and `PowerUserAccess` (deploy). Copy the inline policies from `terraform plan` output in `bootstrap/github-oidc` (`terraform-state`, `bounded-iam`), and create the `app-role-boundary` policy the same way.
 4. Bring them under Terraform: copy `bootstrap/github-oidc/imports.tf.example` to `imports.tf`, fill in the account id, run `terraform plan` (it should show *import*, not *create*), apply, then delete `imports.tf`.
