@@ -28,3 +28,25 @@ import {
   to = aws_iam_role_policy_attachment.deploy_power_user
   id = "github-actions-terraform-deploy/arn:aws:iam::aws:policy/PowerUserAccess"
 }
+
+# DMS's fixed-name roles, if DMS was ever used in this account before (the console
+# creates them on first use).
+import {
+  to = aws_iam_role.dms["dms-vpc-role"]
+  id = "dms-vpc-role"
+}
+
+import {
+  to = aws_iam_role.dms["dms-cloudwatch-logs-role"]
+  id = "dms-cloudwatch-logs-role"
+}
+
+import {
+  to = aws_iam_role_policy_attachment.dms["dms-vpc-role"]
+  id = "dms-vpc-role/arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole"
+}
+
+import {
+  to = aws_iam_role_policy_attachment.dms["dms-cloudwatch-logs-role"]
+  id = "dms-cloudwatch-logs-role/arn:aws:iam::aws:policy/service-role/AmazonDMSCloudWatchLogsRole"
+}

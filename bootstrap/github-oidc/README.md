@@ -1,6 +1,6 @@
 # bootstrap/github-oidc
 
-Lets GitHub Actions in `main-terraform` and `source-app` use AWS without stored keys, and limits what those pipelines can do. **Apply it from your machine only.** CI validates and scans it but never applies it, and the deploy role is denied writes to its state.
+Lets GitHub Actions in `main-terraform`, `source-app` and `cdc-iceberg-bench` use AWS without stored keys, and limits what those pipelines can do. **Apply it from your machine only.** CI validates and scans it but never applies it, and the deploy role is denied writes to its state.
 
 | Resource | Purpose |
 |---|---|
@@ -8,11 +8,12 @@ Lets GitHub Actions in `main-terraform` and `source-app` use AWS without stored 
 | Role `github-actions-terraform-plan` | Assumable from **pull requests** of the listed repos. `ReadOnlyAccess` + read state + write `*.tflock` |
 | Role `github-actions-terraform-deploy` | Assumable only from the **`prod` GitHub Environment** (needs your approval). `PowerUserAccess` + state + bounded IAM (below) |
 | Policy `app-role-boundary` | Permissions boundary every app-created role must carry: a ceiling of app services, with all IAM denied |
+| Roles `dms-vpc-role`, `dms-cloudwatch-logs-role` | Required by AWS DMS under these fixed names, so app pipelines can't create them. AWS managed DMS policies only |
 | SSM `/main-terraform/prod/iam/*` | `app_role_boundary_arn`, `github_plan_role_arn`, `github_deploy_role_arn` |
 
 ## What the deploy role can and can't do in IAM
 
-- Create roles, or add policies to them, **only** for names `source-app-*` / `main-terraform-*`, and **only** when the role carries `app-role-boundary` (`iam:PermissionsBoundary` condition).
+- Create roles, or add policies to them, **only** for names `source-app-*` / `main-terraform-*` / `cdc-iceberg-bench-*`, and **only** when the role carries `app-role-boundary` (`iam:PermissionsBoundary` condition).
 - Explicitly denied:
   - removing a boundary, or setting any other boundary
   - changing the `app-role-boundary` policy
