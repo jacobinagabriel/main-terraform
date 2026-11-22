@@ -91,6 +91,8 @@ data "aws_iam_policy_document" "app_role_boundary" {
       "kms:DescribeKey",
       "kms:GenerateDataKey",
       "lakeformation:GetDataAccess",
+      "lambda:GetFunctionConfiguration",
+      "lambda:InvokeFunction",
       "logs:*",
       "rds:Describe*",
       "rds-db:connect",

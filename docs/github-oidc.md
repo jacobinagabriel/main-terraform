@@ -18,7 +18,7 @@ terraform output
 
 CI never applies this stack, and the deploy role it creates is denied writes to this stack's state.
 
-## 2. GitHub settings (both repositories)
+## 2. GitHub settings (every repository)
 
 1. **Settings → Environments → `prod`**: add yourself under *Required reviewers*, and under *Deployment branches* allow only `main`. (Already created if you followed the PRs; check that it's there.)
 2. **Settings → Secrets and variables → Actions → Variables**:
@@ -37,7 +37,7 @@ repo:jacobinagabriel@146280129/<repo>@<repo-id>:pull_request          # plan rol
 repo:jacobinagabriel@146280129/<repo>@<repo-id>:environment:prod      # deploy role
 ```
 
-IDs are never reused, so if a repository is deleted or renamed, someone who later takes its name doesn't get these roles. Both repositories already use this format (`gh api repos/jacobinagabriel/<repo>/actions/oidc/customization/sub` shows `use_immutable_subject: true`). To add a repository, add its name and ID to `repositories` in `bootstrap/github-oidc/variables.tf` and re-apply the bootstrap stack.
+IDs are never reused, so if a repository is deleted or renamed, someone who later takes its name doesn't get these roles. All three repositories use this format (`gh api repos/jacobinagabriel/<repo>/actions/oidc/customization/sub` shows `use_immutable_subject: true`). To add a repository, add its name and ID to `repositories` in `bootstrap/github-oidc/variables.tf` and re-apply the bootstrap stack.
 
 | Role | Who can assume it | Can do |
 |---|---|---|

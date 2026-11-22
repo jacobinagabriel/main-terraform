@@ -20,8 +20,9 @@ variable "repositories" {
   description = "Repositories whose workflows may assume the roles: name => numeric ID (gh api repos/<owner>/<repo> --jq .id)"
   type        = map(number)
   default = {
-    "main-terraform" = 1110283550
-    "source-app"     = 1450656531
+    "main-terraform"    = 1110283550
+    "source-app"        = 1450656531
+    "cdc-iceberg-bench" = 1468065993
   }
 }
 
@@ -40,7 +41,7 @@ variable "state_bucket" {
 variable "app_role_prefixes" {
   description = "Name prefixes of the IAM roles and policies the deploy role may manage"
   type        = list(string)
-  default     = ["source-app-", "main-terraform-"]
+  default     = ["source-app-", "main-terraform-", "cdc-iceberg-bench-"]
 }
 
 variable "ssm_prefix" {
